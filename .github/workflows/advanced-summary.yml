@@ -1,0 +1,127 @@
+name: Advanced Summary Example
+
+on:
+  workflow_dispatch:
+    inputs:
+      deployment_type:
+        description: 'Type of deployment'
+        required: true
+        type: choice
+        options:
+          - frontend
+          - backend
+          - full-stack
+
+jobs:
+  deploy-with-summary:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Start deployment
+        run: |
+          echo "Starting deployment..."
+          sleep 2
+
+      - name: Build application
+        id: build
+        run: |
+          echo "Building ${{ inputs.deployment_type }}..."
+
+          # Simulate build
+          BUILD_TIME=$((RANDOM % 30 + 10))
+          sleep 2
+
+          # Set outputs for later use
+          echo "build_time=${BUILD_TIME}s" >> $GITHUB_OUTPUT
+          echo "build_status=success" >> $GITHUB_OUTPUT
+
+          # Add to summary
+          echo "## Build Phase 🏗️" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- **Type**: ${{ inputs.deployment_type }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Duration**: ${BUILD_TIME}s" >> $GITHUB_STEP_SUMMARY
+          echo "- **Status**: ✅ Success" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+      - name: Run tests
+        id: tests
+        run: |
+          echo "Running tests..."
+
+          # Simulate test results
+          TOTAL_TESTS=156
+          PASSED=$((RANDOM % 20 + 136))
+          FAILED=$((TOTAL_TESTS - PASSED))
+
+          sleep 2
+
+          # Add test results to summary
+          echo "## Test Results 🧪" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Metric | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "|--------|-------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Total Tests | $TOTAL_TESTS |" >> $GITHUB_STEP_SUMMARY
+          echo "| Passed | ✅ $PASSED |" >> $GITHUB_STEP_SUMMARY
+          echo "| Failed | ❌ $FAILED |" >> $GITHUB_STEP_SUMMARY
+          echo "| Pass Rate | $(echo "scale=1; $PASSED*100/$TOTAL_TESTS" | bc)% |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          # Store for later
+          echo "passed=$PASSED" >> $GITHUB_OUTPUT
+          echo "failed=$FAILED" >> $GITHUB_OUTPUT
+
+      - name: Deploy
+        id: deploy
+        run: |
+          echo "Deploying to production..."
+          sleep 2
+
+          DEPLOY_URL="https://example-${{ inputs.deployment_type }}.com"
+
+          # Add deployment info
+          echo "## Deployment 🚀" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- **Environment**: Production" >> $GITHUB_STEP_SUMMARY
+          echo "- **URL**: [$DEPLOY_URL]($DEPLOY_URL)" >> $GITHUB_STEP_SUMMARY
+          echo "- **Time**: $(date '+%Y-%m-%d %H:%M:%S')" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+      - name: Generate final summary
+        if: always()
+        run: |
+          echo "---" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "## Overall Status 📊" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          # Create a nice status badge
+          if [ "${{ steps.tests.outputs.failed }}" -eq "0" ]; then
+            echo "### ✅ All systems go! Deployment successful!" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "### ⚠️ Deployment completed with ${{ steps.tests.outputs.failed }} test failures" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Workflow Details:**" >> $GITHUB_STEP_SUMMARY
+          echo "- Run ID: ${{ github.run_id }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Run Number: #${{ github.run_number }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Triggered by: @${{ github.actor }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Branch: \`${{ github.ref_name }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "---" >> $GITHUB_STEP_SUMMARY
+          echo "_Generated at $(date)_" >> $GITHUB_STEP_SUMMARY
+
+      - name: Add code block example
+        run: |
+          echo "## Configuration Used 📝" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo '```json' >> $GITHUB_STEP_SUMMARY
+          echo '{' >> $GITHUB_STEP_SUMMARY
+          echo '  "deployment_type": "${{ inputs.deployment_type }}",' >> $GITHUB_STEP_SUMMARY
+          echo '  "environment": "production",' >> $GITHUB_STEP_SUMMARY
+          echo '  "timestamp": "'$(date -u +%Y-%m-%dT%H:%M:%SZ)'"' >> $GITHUB_STEP_SUMMARY
+          echo '}' >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
