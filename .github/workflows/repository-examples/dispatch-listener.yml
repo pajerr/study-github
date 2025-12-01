@@ -1,0 +1,15 @@
+name: Repository Dispatch Listener
+
+on:
+  repository_dispatch:
+    types: [run-tests, deploy]
+
+jobs:
+  print-payload:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Print payload
+        run: |
+          echo "Event type: ${{ github.event.action }}"
+          echo "Payload env: ${{ github.event.client_payload.env }}"
