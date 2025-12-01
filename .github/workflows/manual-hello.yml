@@ -1,0 +1,66 @@
+name: Manual Hello Action
+
+on:
+  workflow_dispatch:
+    inputs:
+      name:
+        description: 'Name to greet'
+        required: true
+        default: 'World'
+        type: string
+      greeting_style:
+        description: 'Greeting style'
+        required: true
+        default: 'friendly'
+        type: choice
+        options:
+          - friendly
+          - formal
+          - casual
+      repeat:
+        description: 'Number of times to greet'
+        required: false
+        default: '1'
+        type: string
+
+jobs:
+  greet-job:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Display greeting configuration
+        run: |
+          echo "👋 Greeting Configuration"
+          echo "Name: ${{ inputs.name }}"
+          echo "Style: ${{ inputs.greeting_style }}"
+          echo "Repeat: ${{ inputs.repeat }} time(s)"
+
+      - name: Run Hello Action
+        uses: ./
+        with:
+          MY_NAME: ${{ inputs.name }}
+
+      - name: Additional greetings
+        run: |
+          REPEAT=${{ inputs.repeat }}
+          STYLE="${{ inputs.greeting_style }}"
+          NAME="${{ inputs.name }}"
+
+          echo "Greeting in $STYLE style:"
+
+          for i in $(seq 1 $REPEAT); do
+            case "$STYLE" in
+              friendly)
+                echo "🎉 Hey there, $NAME! Great to see you! (Greeting #$i)"
+                ;;
+              formal)
+                echo "🎩 Good day, $NAME. It is a pleasure. (Greeting #$i)"
+                ;;
+              casual)
+                echo "👊 Yo $NAME, what's up! (Greeting #$i)"
+                ;;
+            esac
+          done

@@ -1,0 +1,104 @@
+name: Manual Workflow Dispatch
+
+on:
+  workflow_dispatch:
+    inputs:
+      logLevel:
+        description: 'Log level'
+        required: true
+        default: 'warning'
+        type: choice
+        options:
+          - info
+          - warning
+          - error
+          - debug
+      tags:
+        description: 'Test scenario tags'
+        required: false
+        type: string
+      environment:
+        description: 'Environment to deploy to'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+          - development
+          - staging
+          - production
+      runTests:
+        description: 'Run test suite'
+        required: false
+        type: boolean
+        default: true
+
+jobs:
+  manual-job:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Display workflow inputs
+        run: |
+          echo "🎯 Workflow manually triggered!"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "Log Level: ${{ inputs.logLevel }}"
+          echo "Test Tags: ${{ inputs.tags || 'none' }}"
+          echo "Environment: ${{ inputs.environment }}"
+          echo "Run Tests: ${{ inputs.runTests }}"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
+      - name: Set log level
+        run: |
+          echo "Setting log level to: ${{ inputs.logLevel }}"
+          case "${{ inputs.logLevel }}" in
+            info)
+              echo "ℹ️  INFO level logging enabled"
+              ;;
+            warning)
+              echo "⚠️  WARNING level logging enabled"
+              ;;
+            error)
+              echo "❌ ERROR level logging enabled"
+              ;;
+            debug)
+              echo "🐛 DEBUG level logging enabled"
+              ;;
+          esac
+
+      - name: Deploy to environment
+        run: |
+          echo "🚀 Deploying to: ${{ inputs.environment }}"
+          echo "Deployment started at: $(date)"
+          sleep 2
+          echo "✅ Deployment to ${{ inputs.environment }} completed!"
+
+      - name: Run tests
+        if: ${{ inputs.runTests == true }}
+        run: |
+          echo "🧪 Running test suite..."
+          if [ -n "${{ inputs.tags }}" ]; then
+            echo "Running tests with tags: ${{ inputs.tags }}"
+          else
+            echo "Running all tests"
+          fi
+          echo "✅ Tests passed!"
+
+      - name: Skip tests
+        if: ${{ inputs.runTests == false }}
+        run: echo "⏭️  Tests skipped as per user input"
+
+      - name: Summary
+        run: |
+          echo "### Workflow Summary 📊" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Parameter | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "|-----------|-------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Log Level | \`${{ inputs.logLevel }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| Environment | \`${{ inputs.environment }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| Test Tags | \`${{ inputs.tags || 'none' }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| Run Tests | \`${{ inputs.runTests }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "✅ Workflow completed successfully!" >> $GITHUB_STEP_SUMMARY
