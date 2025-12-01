@@ -1,0 +1,30 @@
+name: Hello World Summary
+
+on:
+  workflow_dispatch:
+    inputs:
+      your_name:
+        description: 'Your name'
+        required: true
+        default: 'World'
+        type: string
+
+jobs:
+  hello-world:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Say Hello
+        run: |
+          echo "Hello, ${{ inputs.your_name }}!"
+          echo "Creating a summary..."
+
+      - name: Create Summary
+        run: |
+          echo "## Hello World Summary 👋" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Greeting**: Hello, ${{ inputs.your_name }}!" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Time**: $(date)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Status**: ✅ Completed successfully" >> $GITHUB_STEP_SUMMARY
