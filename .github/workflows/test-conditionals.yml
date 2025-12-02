@@ -1,0 +1,25 @@
+name: Test Conditionals
+
+on: push
+
+jobs:
+  main-branch-check:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Running on main branch
+        run: echo "✅ This job only runs on main branch"
+
+  step-level-conditionals:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Always runs
+        run: echo "This step runs on any branch"
+
+      - name: Only on main branch
+        if: github.ref == 'refs/heads/main'
+        run: echo "✅ This step only runs on main"
+
+      - name: Not on main branch
+        if: github.ref != 'refs/heads/main'
+        run: echo "⚠️ This step runs on non-main branches"
