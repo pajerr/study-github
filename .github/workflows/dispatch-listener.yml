@@ -13,3 +13,8 @@ jobs:
         run: |
           echo "Event type: ${{ github.event.action }}"
           echo "Payload env: ${{ github.event.client_payload.env }}"
+          echo "Payload version: ${{ github.event.client_payload.version }}"
+          echo "Payload region: ${{ github.event.client_payload.region }}"
+
+      - name: Print payload
+        run: echo "${{ github.event.client_payload }}"
