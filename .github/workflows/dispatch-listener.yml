@@ -16,5 +16,17 @@ jobs:
           echo "Payload version: ${{ github.event.client_payload.version }}"
           echo "Payload region: ${{ github.event.client_payload.region }}"
 
-      - name: Print payload
+      - name: Print full payload
         run: echo "${{ github.event.client_payload }}"
+
+      - name: Staging environment step
+        if: github.event.client_payload.env == 'staging'
+        run: |
+          echo "🎯 Running extra step for STAGING environment!"
+          echo "This only runs when env=staging"
+
+      - name: Production environment step
+        if: github.event.client_payload.env == 'production'
+        run: |
+          echo "🚀 Running extra step for PRODUCTION environment!"
+          echo "This only runs when env=production"
