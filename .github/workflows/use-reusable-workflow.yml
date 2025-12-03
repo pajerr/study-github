@@ -1,0 +1,15 @@
+name: Use Reusable Workflow
+
+on:
+  workflow_dispatch:
+    inputs:
+      name:
+        description: 'Name to greet'
+        required: true
+        default: 'Reusable User'
+
+jobs:
+  call-reusable:
+    uses: ./.github/workflows/reusable-hello.yml
+    with:
+      who: ${{ inputs.name }}

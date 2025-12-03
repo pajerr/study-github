@@ -1,0 +1,19 @@
+name: Reusable Hello Workflow
+
+on:
+  workflow_call:
+    inputs:
+      who:
+        description: 'Who to greet'
+        required: true
+        type: string
+
+jobs:
+  greet:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Say hello
+        run: echo "Hello, ${{ inputs.who }} from reusable workflow!"
+
+      - name: Show timestamp
+        run: echo "Timestamp: $(date)"

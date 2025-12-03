@@ -1,0 +1,19 @@
+name: 'Hello Composite Action'
+description: 'A simple composite action that says hello'
+
+inputs:
+  who:
+    description: 'Who to greet'
+    required: true
+    default: 'World'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Say hello
+      shell: bash
+      run: echo "Hello, ${{ inputs.who }} from composite action!"
+
+    - name: Show timestamp
+      shell: bash
+      run: echo "Timestamp: $(date)"
