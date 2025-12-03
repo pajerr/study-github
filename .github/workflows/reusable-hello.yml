@@ -17,3 +17,6 @@ jobs:
 
       - name: Show timestamp
         run: echo "Timestamp is $(date)"
+
+      - name: erno-debug
+      - name: echo "hello debugg"
