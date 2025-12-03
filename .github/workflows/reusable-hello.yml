@@ -4,7 +4,7 @@ on:
   workflow_call:
     inputs:
       who:
-        description: 'Who to greet'
+        description: Who to greet
         required: true
         type: string
 
@@ -16,4 +16,4 @@ jobs:
         run: echo "Hello, ${{ inputs.who }} from reusable workflow!"
 
       - name: Show timestamp
-        run: echo "Timestamp: $(date)"
+        run: echo "Timestamp is $(date)"
